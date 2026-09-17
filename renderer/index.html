@@ -86,6 +86,7 @@
           <button id="tabNews" class="tab active">News</button>
           <button id="tabStrategies" class="tab">Strategies</button>
           <button id="tabAccount" class="tab">Account</button>
+          <button id="tabBacktest" class="tab">Backtest</button>
           <button id="tabSources" class="tab">Sources</button>
         </section>
 
@@ -112,6 +113,30 @@
         </section>
         <section id="sourcesPane" class="pane hidden">
           <ul id="sourceList" class="news-list"></ul>
+        </section>
+        <section id="backtestPane" class="pane hidden">
+          <div class="strat-row">
+            <button id="btnRunBacktest" class="deal-close">Run Backtest</button>
+            <span id="btStatus" class="muted" style="margin-left:8px"></span>
+          </div>
+          <div id="btStats" class="acct-cards hidden">
+            <div><span class="level-label">Total P&amp;L</span><span id="btPnl" class="acct-big">--</span></div>
+            <div><span class="level-label">Win Rate</span><span id="btWinRate" class="acct-mid">--</span></div>
+            <div><span class="level-label">Profit Factor</span><span id="btPF" class="acct-mid">--</span></div>
+          </div>
+          <div id="btStats2" class="acct-cards hidden">
+            <div><span class="level-label">Trades</span><span id="btTrades" class="acct-mid">--</span></div>
+            <div><span class="level-label">Max DD</span><span id="btDD" class="acct-mid">--</span></div>
+            <div><span class="level-label">Sharpe</span><span id="btSharpe" class="acct-mid">--</span></div>
+          </div>
+          <div id="btStats3" class="acct-cards hidden">
+            <div><span class="level-label">Avg R</span><span id="btAvgR" class="acct-mid">--</span></div>
+            <div><span class="level-label">Best R</span><span id="btBestR" class="acct-mid">--</span></div>
+            <div><span class="level-label">Avg Bars</span><span id="btAvgBars" class="acct-mid">--</span></div>
+          </div>
+          <canvas id="btEquityCanvas" class="equity-canvas hidden" width="420" height="64"></canvas>
+          <div class="strat-row acct-head"><span class="strat-name">Backtest trades</span></div>
+          <ul id="btTradeList" class="news-list"></ul>
         </section>
       </div>
     </div>

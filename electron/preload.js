@@ -8,6 +8,7 @@ const rules = require('../src/rules');
 const strategies = require('../src/strategies');
 const signals = require('../src/signals');
 const paper = require('../src/paper');
+const { backtest } = require('../src/backtest');
 
 contextBridge.exposeInMainWorld('agent', {
   getConfig: () => ipcRenderer.invoke('config:get'),
@@ -36,6 +37,7 @@ contextBridge.exposeInMainWorld('lib', {
   binanceInterval: (tvInterval) => toBinanceInterval(tvInterval),
   mt5Status: (cfg, force) => mt5Status(cfg, force),
   tvSymbol: (symbol, market) => toTradingViewSymbol(symbol, market),
+  backtest: (payload) => backtest(payload),
   paper: {
     defaults: () => paper.DEFAULTS,
     createAccount: (cfg) => paper.createAccount(cfg),

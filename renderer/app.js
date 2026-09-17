@@ -1738,7 +1738,7 @@ async function init() {
 
   window.addEventListener('resize', sizeSignalChart);
 
-  const TABS = { tabNews: 'newsPane', tabStrategies: 'strategiesPane', tabAccount: 'accountPane', tabSources: 'sourcesPane' };
+  const TABS = { tabNews: 'newsPane', tabStrategies: 'strategiesPane', tabAccount: 'accountPane', tabBacktest: 'backtestPane', tabSources: 'sourcesPane' };
   for (const [btn, pane] of Object.entries(TABS)) {
     $('#' + btn).addEventListener('click', () => {
       for (const [b, p] of Object.entries(TABS)) {
@@ -1747,6 +1747,81 @@ async function init() {
       }
     });
   }
+
+  $('#btnRunBacktest').addEventListener('click', async () => {
+    if (!window.lib.backtest) return;
+    const status = $('#btStatus');
+    status.textContent = 'Running...';
+    $('#btnRunBacktest').disabled = true;
+    try {
+      const result = window.lib.backtest({
+        candles: state.candles || [],
+        rules: state.cfg.rules || {},
+        strategy: state.strategy,
+        initialBalance: (state.cfg.paper && state.cfg.paper.initialBalance) || 10000,
+        riskPerTradePct: (state.cfg.paper && state.cfg.paper.riskPerTradePct) || 1.0,
+        commissionPerTrade: (state.cfg.paper && state.cfg.paper.commissionPerTrade) || 0,
+      });
+      if (!result.ok) {
+        status.textContent = result.error || 'Backtest failed';
+        return;
+      }
+      status.textContent = result.trades + ' trades over ' + (result.curve ? result.curve.length : 0) + ' bars';
+      $('#btStats').classList.remove('hidden');
+      $('#btStats2').classList.remove('hidden');
+      $('#btStats3').classList.remove('hidden');
+      const pnlClass = result.totalPnl >= 0 ? 'pos' : 'neg';
+      $('#btPnl').innerHTML = '<span class="' + pnlClass + '">' + (result.totalPnl >= 0 ? '+' : '') + fmtPrice(result.totalPnl, state.apiSymbol) + ' (' + result.totalPnlPct.toFixed(2) + '%)</span>';
+      $('#btWinRate').textContent = result.winRate.toFixed(1) + '%';
+      $('#btPF').textContent = result.profitFactor === Infinity ? '∞' : result.profitFactor.toFixed(2);
+      $('#btTrades').textContent = result.trades;
+      $('#btDD').textContent = result.maxDrawdownPct.toFixed(2) + '%';
+      $('#btSharpe').textContent = result.sharpe.toFixed(2);
+      $('#btAvgR').textContent = result.avgR.toFixed(2) + 'R';
+      $('#btBestR').textContent = result.bestR.toFixed(2) + 'R';
+      $('#btAvgBars').textContent = result.avgBarsPerTrade.toFixed(0);
+      const canvas = $('#btEquityCanvas');
+      canvas.classList.remove('hidden');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.clientWidth || 420;
+      const H = canvas.clientHeight || 64;
+      canvas.width = W;
+      canvas.height = H;
+      ctx.clearRect(0, 0, W, H);
+      if (result.curve && result.curve.length > 1) {
+        const vals = result.curve.map((p) => p.equity);
+        const min = Math.min.apply(null, vals);
+        const max = Math.max.apply(null, vals);
+        const range = max - min || 1;
+        ctx.strokeStyle = vals[vals.length - 1] >= vals[0] ? '#22c55e' : '#ef4444';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (let i = 0; i < vals.length; i++) {
+          const x = (i / (vals.length - 1)) * W;
+          const y = H - ((vals[i] - min) / range) * (H - 4) - 2;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      const list = $('#btTradeList');
+      list.innerHTML = '';
+      const recent = result.trades.slice(-50).reverse();
+      for (const t of recent) {
+        const li = document.createElement('li');
+        const win = t.pnl >= 0;
+        const d = Math.abs(t.entry) >= 1000 ? 1 : Math.abs(t.entry) >= 10 ? 2 : 5;
+        li.innerHTML = '<span class="' + (win ? 'pos' : 'neg') + '">' + (t.side === 'long' ? 'LONG' : 'SHORT') + '</span> ' +
+          t.entry.toFixed(d) + ' → ' + t.exit.toFixed(d) +
+          ' <span class="' + (win ? 'pos' : 'neg') + '">' + (t.pnl >= 0 ? '+' : '') + t.pnl.toFixed(2) + '</span> ' +
+          t.rMultiple.toFixed(2) + 'R · ' + t.reason;
+        list.appendChild(li);
+      }
+    } catch (err) {
+      status.textContent = 'Error: ' + err.message;
+    } finally {
+      $('#btnRunBacktest').disabled = false;
+    }
+  });
 
   const stratSel = $('#strategySelect');
   for (const s of window.lib.strategies || []) {

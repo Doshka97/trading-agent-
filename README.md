@@ -2,6 +2,8 @@
 
 A real-time desktop trading assistant built with **Electron** that runs 9 strategies against live market data, draws indicator overlays and entry signals directly on the chart, and paper-trades every decision so you can see how it performs — all without risking a cent.
 
+![Trading Agent Screenshot](screenshot.png)
+
 ---
 
 ## Features

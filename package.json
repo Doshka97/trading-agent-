@@ -1,0 +1,27 @@
+{
+  "name": "trading-agent",
+  "version": "0.1.0",
+  "description": "Desktop trading agent: TradingView overlay + technical analysis + news sentiment + entry signals",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "check": "node --check electron/main.js && node --check electron/preload.js && node --check electron/news.js && node --check src/webview-preload.js && node --check src/indicators.js && node --check src/rules.js && node --check src/strategies.js && node --check src/signals.js && node --check src/paper.js && node --check src/sentiment.js && node --check src/market.js && node --check src/mt5.js && node --check src/tradingview.js && node --check renderer/app.js",
+    "mt5": "py -3 bridge/mt5_bridge.py",
+    "mt5:check": "py -3 -c \"import MetaTrader5 as m; print('MetaTrader5', m.__version__)\""
+  },
+  "keywords": [
+    "trading",
+    "tradingview",
+    "electron",
+    "signals",
+    "technical-analysis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.0"
+  },
+  "dependencies": {
+    "lightweight-charts": "^4.2.0"
+  }
+}

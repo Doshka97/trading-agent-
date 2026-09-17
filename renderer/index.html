@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.binance.com wss://stream.binance.com:9443 wss://stream.binance.com wss://data-stream.binance.vision https://scanner.tradingview.com http://127.0.0.1:8765 http://localhost:8765 https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://www.alphavantage.co https://biquote.io;">
+  <title>Trading Agent</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="chart-zone">
+      <div id="signalChart"></div>
+    </div>
+
+    <div id="panel" class="collapsed-hidden">
+      <div id="panel-head" title="Drag to move. Double-click to pin/unpin.">
+        <span class="signal-chip" id="chipSignal">WAIT</span>
+        <span id="chipSymbol">-</span>
+        <div class="head-actions">
+          <button id="btnCollapse" title="Collapse">–</button>
+        </div>
+      </div>
+
+      <div id="panel-body">
+        <section class="price-row">
+          <div>
+            <div class="price-label">Last price <span id="liveDot" class="live-dot" title="">&#9679; LIVE</span></div>
+            <div id="lastPrice" class="price">--</div>
+          </div>
+          <div>
+            <div class="price-label">Score</div>
+            <div id="scoreBadge" class="score-badge">0</div>
+          </div>
+        </section>
+
+        <section class="meter">
+          <div class="meter-track"><div id="meterFill" class="meter-fill"></div><div id="meterZero"></div></div>
+          <div class="meter-labels"><span>SELL</span><span>NEUTRAL</span><span>BUY</span></div>
+        </section>
+
+        <section class="strategy-line">
+          <span id="stratName" class="strat-name">—</span>
+          <span id="regimeBadge" class="regime-badge">regime: —</span>
+        </section>
+
+        <section id="dealBox" class="deal-box flat">
+          <div class="deal-head">
+            <span id="dealSignal" class="deal-signal flat">FLAT</span>
+            <span id="dealSide" class="deal-side">No open deal</span>
+            <button id="dealCloseBtn" class="deal-close hidden" title="Close deal at market">Close</button>
+          </div>
+          <div id="dealMsg" class="deal-msg">Waiting for an entry signal…</div>
+          <div id="dealStats" class="level-grid level-grid-3 hidden">
+            <div><span class="level-label">Entry</span><span id="dealEntry" class="level-val">--</span></div>
+            <div><span class="level-label">P&amp;L</span><span id="dealPnl" class="level-val">--</span></div>
+            <div><span class="level-label">R multiple</span><span id="dealR" class="level-val">--</span></div>
+          </div>
+        </section>
+
+        <section id="entryBox" class="entry-box hidden">
+          <div class="entry-title">Trade plan</div>
+          <div class="level-grid level-grid-3">
+            <div><span class="level-label">Entry</span><span id="levEntry" class="level-val">--</span></div>
+            <div><span class="level-label">Stop loss</span><span id="levStop" class="level-val">--</span></div>
+            <div><span class="level-label">Take profit</span><span id="levTp" class="level-val">--</span></div>
+          </div>
+          <div id="levMeta" class="level-meta">--</div>
+          <div id="entryText" class="entry-text">--</div>
+        </section>
+
+        <section class="reasons">
+          <div class="section-title">Why (score breakdown)</div>
+          <ul id="reasonList" class="reason-list"></ul>
+        </section>
+
+        <section class="indicator-grid">
+          <div><span class="i-label">EMA 9 / 21 / 50</span><span id="iEma" class="i-val">-</span></div>
+          <div><span class="i-label">RSI (14)</span><span id="iRsi" class="i-val">-</span></div>
+          <div><span class="i-label">MACD hist</span><span id="iMacd" class="i-val">-</span></div>
+          <div><span class="i-label">Vol ratio</span><span id="iVol" class="i-val">-</span></div>
+          <div><span class="i-label">ATR</span><span id="iAtr" class="i-val">-</span></div>
+        </section>
+
+        <section class="tabs">
+          <button id="tabNews" class="tab active">News</button>
+          <button id="tabStrategies" class="tab">Strategies</button>
+          <button id="tabAccount" class="tab">Account</button>
+          <button id="tabSources" class="tab">Sources</button>
+        </section>
+
+        <section id="newsPane" class="pane">
+          <div id="newsHead" class="news-head">Sentiment: --</div>
+          <ul id="newsList" class="news-list"><li class="muted">Fetching news…</li></ul>
+        </section>
+        <section id="strategiesPane" class="pane hidden">
+          <ul id="strategyList" class="news-list"></ul>
+        </section>
+        <section id="accountPane" class="pane hidden">
+          <div class="acct-cards">
+            <div><span class="level-label">Equity</span><span id="acctEquity" class="acct-big">--</span></div>
+            <div><span class="level-label">Balance</span><span id="acctBalance" class="acct-mid">--</span></div>
+            <div><span class="level-label">Open P&amp;L</span><span id="acctOpen" class="acct-mid">--</span></div>
+          </div>
+          <canvas id="equityCanvas" class="equity-canvas" width="420" height="64"></canvas>
+          <div class="acct-stats" id="acctStats"></div>
+          <div class="strat-row acct-head">
+            <span class="strat-name">Paper trades</span>
+            <button id="btnPaperReset" class="deal-close">Reset account</button>
+          </div>
+          <ul id="tradeList" class="news-list"></ul>
+        </section>
+        <section id="sourcesPane" class="pane hidden">
+          <ul id="sourceList" class="news-list"></ul>
+        </section>
+      </div>
+    </div>
+
+    <button id="panelToggle" title="Show/hide agent panel">◧ Agent</button>
+
+    <div id="topbar">
+      <select id="marketSelect" title="Market">
+        <option value="crypto">Crypto</option>
+        <option value="stock">Stocks</option>
+        <option value="gold">Gold</option>
+        <option value="forex">Forex</option>
+      </select>
+      <input id="symbolInput" placeholder="Search symbol…" list="symbolList" spellcheck="false" autocomplete="off" />
+      <datalist id="symbolList"></datalist>
+      <select id="intervalSelect" title="Timeframe">
+        <option value="1">1m</option>
+        <option value="5">5m</option>
+        <option value="15">15m</option>
+        <option value="30">30m</option>
+        <option value="60" selected>1h</option>
+        <option value="120">2h</option>
+        <option value="240">4h</option>
+        <option value="D">Daily</option>
+        <option value="W">Weekly</option>
+      </select>
+      <select id="strategySelect" title="Strategy"></select>
+      <button id="btnRefresh" title="Refresh data">Refresh</button>
+      <button id="btnSettings" title="Settings">Settings</button>
+      <button id="btnFullscreen" title="Fullscreen (F11)">⛶</button>
+      <span id="conn" class="conn ok">●</span>
+    </div>
+
+    <div id="settingsModal" class="modal hidden">
+      <div class="modal-box">
+        <h2>Settings</h2>
+        <div class="modal-scroll">
+          <h3>Signal thresholds (score)</h3>
+          <label>Strong Buy &ge; <input id="setStrongBuy" type="number" class="num" /></label>
+          <label>Buy &ge; <input id="setBuy" type="number" class="num" /></label>
+          <label>Sell &le; <input id="setSell" type="number" class="num" /></label>
+          <label>Strong Sell &le; <input id="setStrongSell" type="number" class="num" /></label>
+
+          <h3>Strategy weights</h3>
+          <label>Trend <input id="setWTrend" type="range" min="0" max="100" step="5" /></label>
+          <label>Momentum <input id="setWMom" type="range" min="0" max="100" step="5" /></label>
+          <label>Volume <input id="setWVol" type="range" min="0" max="100" step="5" /></label>
+          <label>News sentiment <input id="setWNews" type="range" min="0" max="100" step="5" /></label>
+          <label>Price action <input id="setWPrice" type="range" min="0" max="100" step="5" /></label>
+
+          <h3>News</h3>
+          <label><input id="setNewsEnabled" type="checkbox" /> Enable news &amp; sentiment</label>
+          <label>Hours of history <input id="setNewsHours" type="number" class="num" /></label>
+          <label>Finnhub key <input id="setFinnhub" type="text" class="txt" /></label>
+          <label>NewsAPI key <input id="setNewsapi" type="text" class="txt" /></label>
+
+          <h3>Alerts</h3>
+          <label><input id="setAlertsEnabled" type="checkbox" /> Desktop notifications on signals</label>
+          <label>Notify when |score| &ge; <input id="setAlertMin" type="number" class="num" /></label>
+
+          <h3>Entry / Exit signals</h3>
+          <label>Open a deal when |score| &ge; <input id="setMinEntry" type="number" class="num" /></label>
+          <label>Close on signal flip &ge; <input id="setFlipScore" type="number" class="num" /></label>
+          <label>Move stop to break-even after (R) <input id="setBreakEvenR" type="number" step="0.1" class="num" /></label>
+          <label><input id="setExitOnFlip" type="checkbox" /> Auto-close when the signal reverses</label>
+
+          <h3>Paper account</h3>
+          <label><input id="setPaperEnabled" type="checkbox" /> Enable paper trading</label>
+          <label><input id="setPaperAuto" type="checkbox" /> Auto-execute signals</label>
+          <label>Starting balance <input id="setPaperBalance" type="number" class="num" /></label>
+          <label>Risk per trade (% of equity) <input id="setPaperRisk" type="number" step="0.1" class="num" /></label>
+          <label>Max leverage <input id="setPaperLev" type="number" class="num" /></label>
+
+          <h3>Polling</h3>
+      <label>Tick (ms) <input id="setTickMs" type="number" class="num" /></label>
+      <label>Price refresh (ms) <input id="setPriceMs" type="number" class="num" /></label>
+      <label>Recompute (ms) <input id="setRecomputeMs" type="number" class="num" min="200" /></label>
+          <label>News refresh (ms) <input id="setNewsMs" type="number" class="num" /></label>
+        </div>
+        <div class="modal-actions">
+          <button id="btnSettingsSave">Save</button>
+          <button id="btnSettingsCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+  </div>
+  <script src="vendor/lightweight-charts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

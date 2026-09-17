@@ -1,0 +1,164 @@
+{
+  "chart": {
+    "host": "https://s.tradingview.com/widgetembed/",
+    "theme": "dark",
+    "style": 1,
+    "locale": "en",
+    "defaultView": "signals"
+  },
+  "market": {
+    "defaultDomain": "OANDA",
+    "defaultSymbol": "XAUUSD",
+    "defaultMarket": "gold",
+    "defaultInterval": "60",
+    "binance": {
+      "baseUrl": "https://api.binance.com",
+      "limit": 300
+    },
+    "yahoo": {
+      "chartBase": "https://query1.finance.yahoo.com/v8/finance/chart/",
+      "searchBase": "https://query1.finance.yahoo.com/v1/finance/search",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+    },
+    "alphavantage": {
+      "baseUrl": "https://www.alphavantage.co/query"
+    },
+    "useBinanceProxies": true,
+    "binanceProxies": {
+      "gold": { "*": "PAXGUSDT" },
+      "forex": { "EURUSD": "EURUSDT", "GBPUSD": "GBPUSDT", "AUDUSD": "AUDUSDT" }
+    },
+    "tradingviewPrice": true,
+    "mt5": {
+      "enabled": true,
+      "autostart": true,
+      "bridgeUrl": "http://127.0.0.1:8765",
+      "port": 8765,
+      "python": "py",
+      "pythonArgs": ["-3"],
+      "login": null,
+      "password": null,
+      "server": null,
+      "terminalPath": null,
+      "markets": ["gold", "forex", "index"],
+      "timeoutMs": 4000
+    }
+  },
+  "poll": {
+    "tickMs": 1000,
+    "mt5Ms": 250,
+    "analysisMs": 300,
+    "priceMs": 15000,
+    "recomputeMs": 300,
+    "maxTickBackoffMs": 30000
+  },
+  "rules": {
+    "strategy": "confluence",
+    "strategyWeights": {
+      "trend_ema": 1.2,
+      "breakout_donchian": 1,
+      "momentum": 1,
+      "meanrev_bollinger": 0.8,
+      "ichimoku": 1,
+      "vwap_volume": 0.9,
+      "sr_fib": 0.8,
+      "price_action": 0.9
+    },
+    "emaFast": 9,
+    "emaSlow": 21,
+    "emaTrend": 50,
+    "rsiPeriod": 14,
+    "rsiOverbought": 70,
+    "rsiOversold": 30,
+    "macdFast": 12,
+    "macdSlow": 26,
+    "macdSignal": 9,
+    "bbPeriod": 20,
+    "bbMult": 2,
+    "stochK": 14,
+    "stochD": 3,
+    "adxPeriod": 14,
+    "vwapPeriod": 20,
+    "donchianFast": 20,
+    "donchianSlow": 55,
+    "swingLookback": 60,
+    "volumeSmaPeriod": 20,
+    "volumeSpikeThreshold": 1.5,
+    "atrPeriod": 14,
+    "atrStopMultiplier": 1.5,
+    "takeProfitMultiplier": 2,
+    "thresholds": {
+      "strongBuy": 40,
+      "buy": 15,
+      "sell": -15,
+      "strongSell": -40
+    },
+    "weights": {
+      "trend": 0.3,
+      "momentum": 0.25,
+      "volume": 0,
+      "sentiment": 0.2,
+      "priceAction": 0.1
+    }
+  },
+  "news": {
+    "enabled": true,
+    "fetchMs": 120000,
+    "hoursBack": 6,
+    "maxRedditSubs": 2,
+    "subreddits": {
+      "crypto": [
+        "CryptoCurrency",
+        "Bitcoin",
+        "ethereum",
+        "CryptoMarkets"
+      ],
+      "stock": [
+        "stocks",
+        "wallstreetbets",
+        "investing"
+      ]
+    },
+    "feeds": {
+      "crypto": [
+        {
+          "name": "coindesk",
+          "url": "https://www.coindesk.com/arc/outboundfeeds/rss/"
+        },
+        {
+          "name": "cointelegraph",
+          "url": "https://cointelegraph.com/rss"
+        }
+      ],
+      "stock": []
+    },
+    "yahooBase": "https://finance.yahoo.com/rss/headline?s=",
+    "reddit": {
+      "baseUrl": "https://www.reddit.com",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+    },
+    "finnhubKey": "",
+    "newsapiKey": ""
+  },
+  "alerts": {
+    "enabled": true,
+    "minAbsScore": 25
+  },
+  "signals": {
+    "minEntryScore": 15,
+    "exitOnFlip": true,
+    "flipScore": 15,
+    "breakEvenAfterR": 1,
+    "useBarExtremes": true
+  },
+  "paper": {
+    "enabled": true,
+    "autoTrade": true,
+    "initialBalance": 10000,
+    "currency": "USD",
+    "riskPerTradePct": 1,
+    "leverage": 30,
+    "commissionPerTrade": 0,
+    "armDelayMs": 5000
+  }
+}

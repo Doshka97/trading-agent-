@@ -1,25 +1,62 @@
 {
   "name": "trading-agent",
-  "version": "0.1.0",
-  "description": "Desktop trading agent: TradingView overlay + technical analysis + news sentiment + entry signals",
+  "version": "1.0.0",
+  "description": "Real-time desktop trading assistant — 9 strategies, live chart overlays, entry/SL/TP signals, and paper trading",
   "main": "electron/main.js",
   "scripts": {
     "start": "electron .",
-    "check": "node --check electron/main.js && node --check electron/preload.js && node --check electron/news.js && node --check src/webview-preload.js && node --check src/indicators.js && node --check src/rules.js && node --check src/strategies.js && node --check src/signals.js && node --check src/paper.js && node --check src/sentiment.js && node --check src/market.js && node --check src/mt5.js && node --check src/tradingview.js && node --check renderer/app.js",
+    "check": "node --check electron/main.js && node --check electron/preload.js && node --check electron/news.js && node --check src/webview-preload.js && node --check src/indicators.js && node --check src/rules.js && node --check src/strategies.js && node --check src/signals.js && node --check src/paper.js && node --check src/sentiment.js && node --check src/market.js && node --check src/mt5.js && node --check src/tradingview.js && node --check renderer/app.js && node --check src/backtest.js",
     "mt5": "py -3 bridge/mt5_bridge.py",
-    "mt5:check": "py -3 -c \"import MetaTrader5 as m; print('MetaTrader5', m.__version__)\""
+    "mt5:check": "py -3 -c \"import MetaTrader5 as m; print('MetaTrader5', m.__version__)\"",
+    "dist": "electron-builder --win --x64",
+    "pack": "electron-builder --dir"
+  },
+  "build": {
+    "appId": "com.doshka.trading-agent",
+    "productName": "Trading Agent",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "bridge/**/*",
+      "renderer/**/*",
+      "config.json",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": null
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Trading Agent"
+    }
   },
   "keywords": [
     "trading",
-    "tradingview",
+    "trading-bot",
+    "technical-analysis",
     "electron",
-    "signals",
-    "technical-analysis"
+    "paper-trading",
+    "chart",
+    "strategies",
+    "lightweight-charts"
   ],
-  "author": "",
+  "author": "Doshka97",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^33.2.0"
+    "electron": "^33.2.0",
+    "electron-builder": "^26.15.3"
   },
   "dependencies": {
     "lightweight-charts": "^4.2.0"

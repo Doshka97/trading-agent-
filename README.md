@@ -21,6 +21,10 @@ A real-time desktop trading assistant built with **Electron** that runs 9 strate
 > Research/education tool. It does not place real orders. Signals are deterministic rule output,
 > not financial advice. Live market data may be delayed.
 
+### Buy the app
+
+Download the Windows installer: **[Buy Trading Agent on Gumroad — $19](https://zezorash.gumroad.com/l/vzkayw)**
+
 ---
 
 ## What it does

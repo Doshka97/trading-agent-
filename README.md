@@ -1,11 +1,20 @@
 # Trading Agent
 
-A desktop (Electron) trading assistant that embeds the **TradingView** chart and floats an
-**overlay panel** on top of it. The panel reads live market data, computes technical
-indicators, runs a **strategy engine** (9 strategies + a confluence mode), pulls in news
-sentiment, and tells you **whether/what/when to enter** with stop-loss and take-profit levels.
-It then **paper-trades** those signals against a simulated account so you can see how the
-strategy performs.
+A real-time desktop trading assistant built with **Electron** that runs 9 strategies against live market data, draws indicator overlays and entry signals directly on the chart, and paper-trades every decision so you can see how it performs — all without risking a cent.
+
+---
+
+## Features
+
+- **9 built-in strategies** — Trend (EMA ribbon + ADX), Momentum (MACD + RSI + Stochastic), Turtle Breakout (Donchian 20/55), Mean Reversion (Bollinger + RSI), Ichimoku Cloud, VWAP + Volume, Support/Resistance + Fibonacci, Price Action, and a Confluence mode that blends all of them
+- **Live chart overlays** — EMA 9/21/50, Bollinger Bands, and Donchian 20/55 channels drawn directly on the candlestick chart
+- **Entry/exit markers with strategy labels** — Every signal shows which strategy triggered it (e.g. `SIGNAL LONG [TREND]`)
+- **SL / TP / ENTRY lines** — Horizontal price lines with R-multiple labels, auto-computed per strategy
+- **Paper trading engine** — Risk-% position sizing, leverage cap, commission, live open P&L, equity curve, win rate, profit factor, max drawdown
+- **Instant signal recompute** — Runs on the live forming bar every 300ms, so SL/TP fire the moment price touches them
+- **Multi-source live prices** — MetaTrader 5 broker feed → biquote.io (gold/forex) → TradingView → Binance WebSocket (crypto) → Yahoo Finance → Alpha Vantage
+- **News sentiment** — RSS from Yahoo Finance, CoinDesk, CoinTelegraph, Reddit; lexicon-based scorer with negation awareness
+- **Single merged chart view** — Lightweight-charts with candlesticks, indicator overlays, deal markers, and SL/TP/ENTRY price lines all in one view
 
 > Research/education tool. It does not place real orders. Signals are deterministic rule output,
 > not financial advice. Live market data may be delayed.
@@ -24,7 +33,7 @@ strategy performs.
 | **Sentiment** | Lexicon + negation/look-ahead aware scorer (`src/sentiment.js`), weighted by engagement and recency, aggregated to a −100…+100 score. |
 | **Signal** | Weighted composite of trend, momentum, volume, price action and news sentiment → **STRONG BUY / BUY / NEUTRAL / SELL / STRONG SELL** with score, reasons, and a plain-language entry plan. |
 | **Signal engine** | `src/signals.js` turns the analysis + your open position into a live **ENTRY / HOLD / EXIT** decision, with break-even-at-R, stop/target hits, and exit-on-flip. |
-| **Signals chart** | The default chart view. Draws candles plus the **whole deal lifecycle**: entry arrows, close markers labelled with the R result and exit reason (TP / SL / FLIP / SYMBOL / MANUAL), and Entry / SL / TP / Last price lines with their R distances. Open deals show live lines; when flat it shows the pending plan. |
+| **Signals chart** | The default chart view. Draws candles plus EMA 9/21/50, Bollinger Bands, Donchian 20/55 overlays, the **whole deal lifecycle**: entry arrows labelled with the triggering strategy, close markers with the R result and exit reason (TP / SL / FLIP / SYMBOL / MANUAL), and Entry / SL / TP / Last price lines with their R distances. Open deals show live lines; when flat it shows the pending plan. |
 | **Paper trading** | `src/paper.js` simulates a funded account: risk-% position sizing, leverage cap, commission, live open P&L, equity curve, win rate, profit factor and max drawdown. Persisted to `paper-account.json`. |
 | **Alerts** | Desktop notifications when the signal changes side and clears a score threshold. |
 
@@ -128,9 +137,7 @@ The badge shows which feed is live:
    - Stocks: `AAPL`, `MSFT` (→ `NASDAQ:`).
    - You can also type an explicit exchange, e.g. `NYSE:BRK.B`, `BINANCE:ETHUSDT`.
 3. Choose a **strategy** and a timeframe, then watch the overlay panel update.
-4. The **Signals** chart (the default view) draws the whole deal: entry arrows, SL/TP/Last
-   lines, and a close marker with the R result and exit reason. Switch to **TradingView** any
-   time. Toggle the **News** / **Strategies** / **Account** / **Sources** tabs below.
+4. The **Signals** chart (the default view) draws candlesticks with **EMA/Bollinger/Donchian overlays**, the whole deal lifecycle: entry arrows labelled with the triggering strategy (e.g. `SIGNAL LONG [TREND]`), close markers with the R result and exit reason, and Entry / SL / TP / Last price lines with their R distances. Switch to **TradingView** any time. Toggle the **News** / **Strategies** / **Account** / **Sources** tabs below.
 5. Click **Settings** to tune thresholds, weights, strategies, signals, paper-trading and feeds.
 
 ### Reading the signal
